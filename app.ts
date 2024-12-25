@@ -1,9 +1,9 @@
 import { Browser, Builder, By } from "selenium-webdriver";
 import Chrome, { type Options } from "selenium-webdriver/chrome";
-// import proxy from "selenium-webdriver/proxy";
 import path from "path";
 import fs from "fs";
 import request from "request";
+import proxy from "selenium-webdriver/proxy";
 
 const headers = {
   "User-Agent":
@@ -14,6 +14,26 @@ const extensionId = "caacbgbklghmpodbdafajbgdnegacfmo";
 const extentionUrl = `https://clients2.google.com/service/update2/crx?response=redirect&prodversion=109.0.5414.87&acceptformat=crx2,crx3&x=id%3D${extensionId}%26uc`;
 
 const outputFilePath = path.resolve(__dirname, `crx/${extensionId}.crx`);
+
+const configProxy = async (options: Chrome.Options) => {
+  const proxyIp = process.env.proxy_ip;
+  const proxyUsername = process.env.proxy_username;
+  const proxyPassword = process.env.proxy_password;
+
+  console.log("-> 代理链接启动中...");
+  console.log("-> 用户:", proxyUsername);
+  console.log("-> 密码:", proxyPassword);
+  console.log("-> 代理:", proxyIp);
+
+  const newProxyUrl = await proxyChain.anonymizeProxy(proxyUrl)
+
+  options.setProxy(
+    proxy.manual({
+      http: proxyIp,
+      userInfo: {},
+    })
+  );
+};
 
 const downloadExtension = async () => {
   if (fs.existsSync(outputFilePath)) {
